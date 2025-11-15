@@ -1,0 +1,10 @@
+Example 1: Just to be clear on which printing of the second edition that is sold by Amazon now (Feb 2019), it is the \"Fourth printing, December 2017\". The images are 15% to 20% larger than those of the first edition. That was accomplished by reducing the page margins and by making the text smaller. The last numbered page is 598 which is 54 pages more than my first edition. However, both editions have the same dimensions because the pages are thinner in the second edition.
+Example 2: I love browsing through this book but would warn people it has the whole US so there are many trees to sort through to find ones in your area.
+Example 3: I ordered this book as well as Edible Wild Plants by Thomas S. Elias & Peter A. Dykeman. This book relies on drawings and has very few color photos whereas the book by Elias and Dykeman is all color photos and a much easier to use and higher quality guide.
+
+Example 1 Extracted pairs:
+(images, larger), (text, smaller), (pages, thinner), (editions, same)
+Example 2 Extracted pairs:
+(trees, many)
+Example 3 Extracted pairs:
+(color, few), (color, all), (quality, higher), (guide, easier)
