@@ -34,6 +34,8 @@ Original amasum dataset:<br>
 https://github.com/abrazinskas/SelSum/tree/master/data<br>
 Theme-filtered amasum dataset:<br>
 https://github.com/tomhosking/hercules<br>
+The Space dataset in this project is come from this link:<br>
+https://github.com/stangelid/qt<br>
 <br>
 The project also uses the following models:<br>
 <br>
