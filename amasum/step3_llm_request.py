@@ -14,11 +14,12 @@ class RequireLLM:
         self.shot_mode = shot_mode
         self.llm_type = llm_type
         assert self.asp in self.aspect
-        assert self.exp_mode in ["baseline", "entity_only", "pair_only", "one_shot_only", "few_shot_only",
+        assert self.exp_mode in ["general", "baseline", "entity_only", "pair_only", "one_shot_only", "few_shot_only",
                                  "entity_pair", "entity_one_shot", "entity_few_shot",
                                  "pair_one_shot", "pair_few_shot"]
         assert self.shot_mode in ["none", "one", "three"]
-        assert self.llm_type in ["dsv3", "GPT5", "Qwen32B", "llama70B"]
+        assert self.llm_type in ["dsv3", "GPT5", "Qwen32B", "llama70B", "llama3_1"
+            ,"Qwen3_205","Nemotron_30","gemma_27"]
 
         self.dsv3_api_key = api_keys["dsv3"]
         self.GPT5_api_key = api_keys["GPT5"]
@@ -84,19 +85,89 @@ class RequireLLM:
 
         return completion.choices[0].message.content
 
-    def ds_get(self, que):
-        client = OpenAI(api_key=self.dsv3_api_key, base_url="https://api.deepseek.com")
+    def llama3_1_get(self, que):
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=self.llama70B_api_key,
+        )
 
-        response = client.chat.completions.create(
-            model="deepseek-chat",
+        completion = client.chat.completions.create(
+            extra_headers={
+                "HTTP-Referer": "<YOUR_SITE_URL>",  # Optional. Site URL for rankings on openrouter.ai.
+                "X-Title": "<YOUR_SITE_NAME>",  # Optional. Site title for rankings on openrouter.ai.
+            },
+            extra_body={},
+            model="meta-llama/llama-3.1-405b-instruct",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that summarizes customer reviews."},
                 {"role": "user", "content": "{}".format(que)},
-            ],
-            stream=False
+            ]
         )
-        ss = response.choices[0].message
-        return ss.content
+
+        return completion.choices[0].message.content
+
+    def Qwen3_205_get(self, que):
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=self.llama70B_api_key,
+        )
+
+        completion = client.chat.completions.create(
+            extra_headers={
+                "HTTP-Referer": "<YOUR_SITE_URL>",  # Optional. Site URL for rankings on openrouter.ai.
+                "X-Title": "<YOUR_SITE_NAME>",  # Optional. Site title for rankings on openrouter.ai.
+            },
+            extra_body={},
+            model="qwen/qwen3-235b-a22b-2507",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that summarizes customer reviews."},
+                {"role": "user", "content": "{}".format(que)},
+            ]
+        )
+
+        return completion.choices[0].message.content
+
+    def Nemotron_30B_get(self, que):
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=self.llama70B_api_key,
+        )
+
+        completion = client.chat.completions.create(
+            extra_headers={
+                "HTTP-Referer": "<YOUR_SITE_URL>",  # Optional. Site URL for rankings on openrouter.ai.
+                "X-Title": "<YOUR_SITE_NAME>",  # Optional. Site title for rankings on openrouter.ai.
+            },
+            extra_body={},
+            model="nvidia/nemotron-3-nano-30b-a3b",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that summarizes customer reviews."},
+                {"role": "user", "content": "{}".format(que)},
+            ]
+        )
+
+        return completion.choices[0].message.content
+
+    def gemma_27B_get(self, que):
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=self.llama70B_api_key,
+        )
+
+        completion = client.chat.completions.create(
+            extra_headers={
+                "HTTP-Referer": "<YOUR_SITE_URL>",  # Optional. Site URL for rankings on openrouter.ai.
+                "X-Title": "<YOUR_SITE_NAME>",  # Optional. Site title for rankings on openrouter.ai.
+            },
+            extra_body={},
+            model="google/gemma-3-27b-it",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that summarizes customer reviews."},
+                {"role": "user", "content": "{}".format(que)},
+            ]
+        )
+
+        return completion.choices[0].message.content
 
     def build_instruction(self, sample_index:int):
         ins_beg = "Summarize the reviews by "
@@ -192,6 +263,14 @@ class RequireLLM:
             llm_get = self.Qwen32B_get
         elif self.llm_type == "llama70B":
             llm_get = self.llama70B_get
+        elif self.llm_type == "llama3_1":
+            llm_get = self.llama3_1_get
+        elif self.llm_type == "Qwen3_205":
+            llm_get = self.Qwen3_205_get
+        elif self.llm_type == "Nemotron_30":
+            llm_get = self.Nemotron_30B_get
+        elif self.llm_type == "gemma_27":
+            llm_get = self.gemma_27B_get
         else:
             raise Exception("no such llm type")
 
@@ -210,11 +289,12 @@ class RequireLLM:
 
 if __name__ == "__main__":
     aspect = ["general"]
-    exp_modes = ["baseline", "entity_only", "pair_only", "one_shot_only", "few_shot_only",
+    exp_modes = ["general", "baseline", "entity_only", "pair_only", "one_shot_only", "few_shot_only",
                  "entity_pair", "entity_one_shot", "entity_few_shot",
                  "pair_one_shot", "pair_few_shot"]
     shot_modes = ["none", "one", "three"]
-    llm_types = ["dsv3", "GPT5", "Qwen32B", "llama70B"]
+    llm_types = ["dsv3", "GPT5", "Qwen32B", "llama70B", "llama3_1"
+            ,"Qwen3_205","Nemotron_30","gemma_27"]
     api_keys = {
         "dsv3": "sk-600",
         "GPT5": "Follow openai guidance, put key in environment",
